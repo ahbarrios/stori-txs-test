@@ -3,14 +3,20 @@
 // with finantial Transactions within the system.
 package tx
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
-// Source any source will implement this to extract transactions from it one at a time.
-// The style of the Source interface is iterator-like or streaming. So the Transaction processor
-// will keep reading using the Read() method from the source until the Done() is true
-type Source interface {
+// NoRecordError it will describe that you consume all records from the source
+// is up to the source to handle this error
+var NoRecordError = errors.New("no more records available in source")
+
+// Reader any source will implement this to extract transactions from it one at a time.
+// The style of the Reader interface is iterator-like or streaming. So the Transaction processor
+// will keep reading using the Read() method from the source until the [internal/tx/NoRecordError] gets returned.
+type Reader interface {
 	Read() (Transaction, error)
-	Done() bool
 }
 
 // Transaction is the main Domain model for this product.

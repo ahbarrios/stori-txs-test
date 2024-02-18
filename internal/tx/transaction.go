@@ -12,11 +12,16 @@ import (
 // is up to the source to handle this error
 var NoRecordError = errors.New("no more records available in source")
 
-// Reader any source will implement this to extract transactions from it one at a time.
-// The style of the Reader interface is iterator-like or streaming. So the Transaction processor
-// will keep reading using the Read() method from the source until the [internal/tx/NoRecordError] gets returned.
-type Reader interface {
-	Read() (Transaction, error)
+// Producer any source will implement this to extract transactions from it one at a time.
+// The style of the Producer interface is iterator-like or streaming. So the Transaction processor
+// will keep reading using the Get() method from the source until the [internal/tx/NoRecordError] gets returned.
+type Producer interface {
+	Get() (Transaction, error)
+}
+
+// Consumer any sink will implement this to consume transactions from the source one at a time.
+type Consumer interface {
+	Put(Transaction) error
 }
 
 // Transaction is the main Domain model for this product.
@@ -25,4 +30,23 @@ type Transaction struct {
 	ID     int
 	Date   time.Time
 	Amount float64
+}
+
+// Process will consume a source and aggregate the transactions into the given consumers
+// until the source is empty.
+func Process(source Producer, aggregators ...Consumer) error {
+	for {
+		t, err := source.Get()
+		if err != nil {
+			if errors.Is(err, NoRecordError) {
+				return nil
+			}
+			return err
+		}
+		for _, a := range aggregators {
+			if err := a.Put(t); err != nil {
+				return err
+			}
+		}
+	}
 }

@@ -43,9 +43,9 @@ type CSV struct {
 	fd *csv.Reader
 }
 
-// Read it will implement [internal/tx/Reader] and get a Transaction value as output
+// Get it will implement [internal/tx/Producer] and get a Transaction value as output
 // it will parse the next row from the CSV file and parse as the managed [internal/tx/Transaction]
-func (c *CSV) Read() (*tx.Transaction, error) {
+func (c *CSV) Get() (*tx.Transaction, error) {
 	r, err := c.read()
 	if err != nil {
 		return nil, err

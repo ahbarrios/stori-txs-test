@@ -2,19 +2,73 @@
 // summarized information about its finantial transactions within the system.
 package agg
 
-import "time"
+import (
+	"time"
+
+	"github.com/ahbarrios/stori-txn-test/internal/tx"
+)
+
+// average it will represent the average of a given set of values
+// since we need two values to calculate the average we will use this internal type
+type average struct {
+	n   int
+	Value float64
+}
+
+func (a *average) Add(v float64) {
+	a.n++
+	a.Value += (v - a.Value) / float64(a.n)
+}
 
 // Balance total balance of the source
 type Balance float64
 
+// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// to produce the total balance of the source
+func (b *Balance) Put(t tx.Transaction) error {
+	*b += Balance(t.Amount)
+	return nil
+}
+
 // AvgDebit average debit transaction amount
-type AvgDebit float64
+type AvgDebit struct {
+	average
+}
+
+// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// to produce the average debit transaction amount. A debit transaction will be identified by
+// a non-negative amount.
+func (ad *AvgDebit) Put(t tx.Transaction) error {
+	if t.Amount >= 0 {
+		ad.average.Add(t.Amount)
+	}
+	return nil
+}
 
 // AvgCredit average credit transaction amount
-type AvgCredit float64
+type AvgCredit struct {
+	average
+}
 
-// MonthlySummary number of transactions by month within the current year
-type MontlySumary struct {
-	Count int
-	Month time.Month
+// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// to produce the average credit transaction amount. A credit transaction will be identified by
+// a negative amount.
+func (ac *AvgCredit) Put(t tx.Transaction) error {
+	if t.Amount < 0 {
+		ac.average.Add(t.Amount)
+	}
+	return nil
+}
+
+// MonthlySummary number of transactions by month
+type MonthlySummary map[time.Month]int
+
+// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// to produce the number of transactions by [time.Month].
+func (ms MonthlySummary) Put(t tx.Transaction) error {
+	if _, ok := ms[t.Date.Month()]; !ok {
+		ms[t.Date.Month()] = 0
+	}
+	ms[t.Date.Month()]++
+	return nil
 }

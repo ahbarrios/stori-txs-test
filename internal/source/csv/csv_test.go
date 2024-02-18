@@ -70,7 +70,7 @@ func TestCSV_Read(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := c.Read()
+			got, err := c.Get()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CSV.Read() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -89,7 +89,7 @@ func TestCSV_Read(t *testing.T) {
 func TestCSV_NoRecordSource(t *testing.T) {
 	c := NewHandler(bytes.NewReader(testNoRecordSource))
 
-	_, err := c.Read()
+	_, err := c.Get()
 	if err != tx.NoRecordError {
 		t.Errorf("CSV.Read() error = %v, expecting NoRecordError", err)
 	}
@@ -98,7 +98,7 @@ func TestCSV_NoRecordSource(t *testing.T) {
 func TestCSV_NoCSVSource(t *testing.T) {
 	c := NewHandler(bytes.NewReader(testBadSource))
 
-	_, err := c.Read()
+	_, err := c.Get()
 	if !errors.Is(err, BadRecordError{}) {
 		t.Errorf("CSV.Read() error = %v, expecting BadRecordError", err)
 	}
@@ -107,7 +107,7 @@ func TestCSV_NoCSVSource(t *testing.T) {
 func TestCSV_EmptySource(t *testing.T) {
 	c := NewHandler(bytes.NewReader(testEmptySource))
 
-	_, err := c.Read()
+	_, err := c.Get()
 	if err != tx.NoRecordError {
 		t.Errorf("CSV.Read() error = %v, expecting NoRecordError", err)
 	}

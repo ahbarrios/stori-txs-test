@@ -23,7 +23,7 @@ func (a *average) Add(v float64) {
 // Balance total balance of the source
 type Balance float64
 
-// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// Put it will implement [tx.Consumer] and process a Transaction value as input
 // to produce the total balance of the source
 func (b *Balance) Put(t *tx.Transaction) error {
 	*b += Balance(t.Amount)
@@ -35,7 +35,7 @@ type AvgCredit struct {
 	average
 }
 
-// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// Put it will implement [tx.Consumer] and process a Transaction value as input
 // to produce the average debit transaction amount. A debit transaction will be identified by
 // a non-negative amount.
 func (ad *AvgCredit) Put(t *tx.Transaction) error {
@@ -50,7 +50,7 @@ type AvgDebit struct {
 	average
 }
 
-// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// Put it will implement [tx.Consumer] and process a Transaction value as input
 // to produce the average credit transaction amount. A credit transaction will be identified by
 // a negative amount.
 func (ac *AvgDebit) Put(t *tx.Transaction) error {
@@ -63,7 +63,7 @@ func (ac *AvgDebit) Put(t *tx.Transaction) error {
 // MonthlySummary number of transactions by month
 type MonthlySummary map[time.Month]int
 
-// Put it will implement [internal/tx/Consumer] and process a Transaction value as input
+// Put it will implement [tx.Consumer] and process a Transaction value as input
 // to produce the number of transactions by [time.Month].
 func (ms MonthlySummary) Put(t *tx.Transaction) error {
 	if _, ok := ms[t.Date.Month()]; !ok {

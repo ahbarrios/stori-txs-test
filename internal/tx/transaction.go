@@ -1,5 +1,5 @@
 // Transaction is the main package of this software.
-// It will contain every important aspect to handle bussiness workflows related
+// It will contain every important aspect to handle business workflows related
 // with finantial Transactions within the system.
 package tx
 
@@ -14,7 +14,7 @@ var NoRecordError = errors.New("no more records available in source")
 
 // Producer any source will implement this to extract transactions from it one at a time.
 // The style of the Producer interface is iterator-like or streaming. So the Transaction processor
-// will keep reading using the Get() method from the source until the [internal/tx/NoRecordError] gets returned.
+// will keep reading using the Get() method from the source until the [NoRecordError] gets returned.
 type Producer interface {
 	Get() (*Transaction, error)
 }

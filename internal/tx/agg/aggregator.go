@@ -30,30 +30,30 @@ func (b *Balance) Put(t *tx.Transaction) error {
 	return nil
 }
 
-// AvgDebit average debit transaction amount
-type AvgDebit struct {
+// AvgCredit average debit transaction amount
+type AvgCredit struct {
 	average
 }
 
 // Put it will implement [internal/tx/Consumer] and process a Transaction value as input
 // to produce the average debit transaction amount. A debit transaction will be identified by
 // a non-negative amount.
-func (ad *AvgDebit) Put(t *tx.Transaction) error {
+func (ad *AvgCredit) Put(t *tx.Transaction) error {
 	if t.Amount >= 0 {
 		ad.average.Add(t.Amount)
 	}
 	return nil
 }
 
-// AvgCredit average credit transaction amount
-type AvgCredit struct {
+// AvgDebit average credit transaction amount
+type AvgDebit struct {
 	average
 }
 
 // Put it will implement [internal/tx/Consumer] and process a Transaction value as input
 // to produce the average credit transaction amount. A credit transaction will be identified by
 // a negative amount.
-func (ac *AvgCredit) Put(t *tx.Transaction) error {
+func (ac *AvgDebit) Put(t *tx.Transaction) error {
 	if t.Amount < 0 {
 		ac.average.Add(t.Amount)
 	}

@@ -27,27 +27,27 @@ func TestBalance_Put(t *testing.T) {
 	}
 }
 
-func TestAvgDebit_Put(t *testing.T) {
-	var ad AvgDebit
+func TestAvgCredit_Put(t *testing.T) {
+	var ad AvgCredit
 	for _, tx := range data {
 		if err := ad.Put(&tx); err != nil {
-			t.Errorf("AvgDebit.Put() error = %v", err)
-		}
-	}
-	if ad.Value != 35.25 {
-		t.Errorf("AvgDebit = %v, want %v", ad.Value, 35.25)
-	}
-}
-
-func TestAvgCredit_Put(t *testing.T) {
-	var ac AvgCredit
-	for _, tx := range data {
-		if err := ac.Put(&tx); err != nil {
 			t.Errorf("AvgCredit.Put() error = %v", err)
 		}
 	}
+	if ad.Value != 35.25 {
+		t.Errorf("AvgCredit = %v, want %v", ad.Value, 35.25)
+	}
+}
+
+func TestAvgDebit_Put(t *testing.T) {
+	var ac AvgDebit
+	for _, tx := range data {
+		if err := ac.Put(&tx); err != nil {
+			t.Errorf("AvgDebit.Put() error = %v", err)
+		}
+	}
 	if ac.Value != -15.38 {
-		t.Errorf("AvgCredit = %v, want %v", ac.Value, -15.38)
+		t.Errorf("AvgDebit = %v, want %v", ac.Value, -15.38)
 	}
 }
 
@@ -60,7 +60,7 @@ func TestMonthlySummary_Put(t *testing.T) {
 	}
 	tg := map[time.Month]int{
 		time.July:   2,
-		time.August:   2,
+		time.August: 2,
 	}
 	if !cmp.Equal(ms, MonthlySummary(tg)) {
 		t.Errorf("MonthlySummary = %v, want %v", ms, tg)

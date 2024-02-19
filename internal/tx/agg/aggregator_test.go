@@ -18,7 +18,7 @@ var data = []tx.Transaction{
 func TestBalance_Put(t *testing.T) {
 	var b Balance
 	for _, tx := range data {
-		if err := b.Put(tx); err != nil {
+		if err := b.Put(&tx); err != nil {
 			t.Errorf("Balance.Put() error = %v", err)
 		}
 	}
@@ -30,7 +30,7 @@ func TestBalance_Put(t *testing.T) {
 func TestAvgDebit_Put(t *testing.T) {
 	var ad AvgDebit
 	for _, tx := range data {
-		if err := ad.Put(tx); err != nil {
+		if err := ad.Put(&tx); err != nil {
 			t.Errorf("AvgDebit.Put() error = %v", err)
 		}
 	}
@@ -42,7 +42,7 @@ func TestAvgDebit_Put(t *testing.T) {
 func TestAvgCredit_Put(t *testing.T) {
 	var ac AvgCredit
 	for _, tx := range data {
-		if err := ac.Put(tx); err != nil {
+		if err := ac.Put(&tx); err != nil {
 			t.Errorf("AvgCredit.Put() error = %v", err)
 		}
 	}
@@ -54,7 +54,7 @@ func TestAvgCredit_Put(t *testing.T) {
 func TestMonthlySummary_Put(t *testing.T) {
 	ms := make(MonthlySummary)
 	for _, tx := range data {
-		if err := ms.Put(tx); err != nil {
+		if err := ms.Put(&tx); err != nil {
 			t.Errorf("MonthlySummary.Put() error = %v", err)
 		}
 	}

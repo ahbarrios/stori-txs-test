@@ -16,12 +16,12 @@ var NoRecordError = errors.New("no more records available in source")
 // The style of the Producer interface is iterator-like or streaming. So the Transaction processor
 // will keep reading using the Get() method from the source until the [internal/tx/NoRecordError] gets returned.
 type Producer interface {
-	Get() (Transaction, error)
+	Get() (*Transaction, error)
 }
 
 // Consumer any sink will implement this to consume transactions from the source one at a time.
 type Consumer interface {
-	Put(Transaction) error
+	Put(*Transaction) error
 }
 
 // Transaction is the main Domain model for this product.

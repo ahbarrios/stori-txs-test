@@ -51,6 +51,7 @@ func TestClient_SendMail_Summary(t *testing.T) {
 			"Subject: testing Client.SendMail Summary Email!\r\n" +
 			"\r\n" +
 			string(br) + "\r\n")
+		t.Logf("Email body: %v", m)
 		return m, err
 	})
 	if err != nil {

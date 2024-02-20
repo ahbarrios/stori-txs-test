@@ -1,5 +1,5 @@
-// Source will allow you to implement any [internal/tx/Transaction] operation extracting those from any available [internal/tx/Source]
-package source
+// CSV will allow you to implement any [internal/tx/Transaction] operation extracting those from any available [internal/tx/Source]
+package csv
 
 import (
 	"encoding/csv"
@@ -13,11 +13,6 @@ import (
 )
 
 var headers = [3]string{"Id", "Date", "Transaction"}
-
-type message struct {
-	r   []string
-	err error
-}
 
 // BadRecordError it will describe invalid argument errors found in source
 type BadRecordError struct {
@@ -43,7 +38,7 @@ type CSV struct {
 	fd *csv.Reader
 }
 
-// Get it will implement [internal/tx/Producer] and get a Transaction value as output
+// Get it will implement [tx.Producer] and get a Transaction value as output
 // it will parse the next row from the CSV file and parse as the managed [internal/tx/Transaction]
 func (c *CSV) Get() (*tx.Transaction, error) {
 	r, err := c.read()
@@ -54,7 +49,7 @@ func (c *CSV) Get() (*tx.Transaction, error) {
 }
 
 // read it will consume the reading stream from the CSV file
-// and return [internal/tx/NoRecordError] when the file is empty
+// and return [tx.NoRecordError] when the file is empty
 func (c *CSV) read() ([]string, error) {
 	read := func(f *csv.Reader) ([]string, error) {
 		r, err := f.Read()
@@ -95,8 +90,7 @@ func (*CSV) parse(r []string) (*tx.Transaction, error) {
 	}, nil
 }
 
-// NewHandler will execute the necessary OS operation
-// to open & parse a [internal/tx/Transaction] in a CSV file.
+// NewHandler will execute the necessary OS operation to parse a [tx.Transaction] in a CSV file.
 func NewHandler(fd io.Reader) *CSV {
 	return &CSV{csv.NewReader(fd)}
 }

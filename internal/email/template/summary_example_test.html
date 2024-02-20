@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
-<!-- Template build this as source https://webdesign.tutsplus.com/build-an-html-email-template-from-scratch--webdesign-12770a?ref=reallygoodemails -->
+
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="x-apple-disable-message-reformatting">
     <title>Stori Transaction Summary</title>
-    {{ .Mso }}
+    <!--[if mso]> 
+    <noscript> 
+    <xml> 
+    <o:OfficeDocumentSettings> 
+    <o:PixelsPerInch>96</o:PixelsPerInch> 
+    </o:OfficeDocumentSettings> 
+    </xml> 
+    </noscript> 
+    <![endif]-->
     <style>
         table,
         td,
@@ -72,7 +80,6 @@
                     </tr>
                     <tr>
                         <td style="padding:0;">
-                            {{- if .CountByMonth }}
                             <table role="presentation"
                                 style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
                                 <thead>
@@ -88,22 +95,31 @@
                                             Transactions</h3>
                                     </td>
                                 </thead>
-                                {{ range $month, $count := .CountByMonth }}
                                 <tr>
                                     <td style="padding:0;vertical-align:top;">
                                         <p
                                             style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
-                                            <b>{{ $month }} 2024</b>
+                                            <b>July 2024</b>
                                         </p>
                                     </td>
                                     <td style="padding:0;font-size:0;line-height:0;">&nbsp;</td>
                                     <td style="padding:0;vertical-align:top;">
-                                        {{ $count }}
+                                        2
                                     </td>
                                 </tr>
-                                {{ end }}
+                                <tr>
+                                    <td style="padding:0;vertical-align:top;">
+                                        <p
+                                            style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
+                                            <b>August 2024</b>
+                                        </p>
+                                    </td>
+                                    <td style="padding:0;font-size:0;line-height:0;">&nbsp;</td>
+                                    <td style="padding:0;vertical-align:top;">
+                                        2
+                                    </td>
+                                </tr>
                             </table>
-                            {{- end }}
                         </td>
                     </tr>
                 </table>
@@ -115,15 +131,15 @@
                     <tr>
                         <td style="padding:0;width:50%;" align="left">
                             <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
-                                <b>Average credit amount:</b> $ {{ .AvgCredit }}
+                                <b>Average credit amount:</b> $ 35.25
                             </p>
                             <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
-                                <b>Average debit amount:</b> $ {{ .AvgDebit }}
+                                <b>Average debit amount:</b> $ 15.38
                             </p>
                         </td>
                         <td style="padding:0;width:50%;" align="center">
                             <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
-                                <b>Total balance:</b> $ {{ .Balance }}
+                                <b>Total balance:</b> $ 39.74
                             </p>
                         </td>
                     </tr>

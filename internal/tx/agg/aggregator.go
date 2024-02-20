@@ -3,6 +3,8 @@
 package agg
 
 import (
+	"fmt"
+	"math"
 	"time"
 
 	"github.com/ahbarrios/stori-txn-test/internal/tx"
@@ -30,7 +32,11 @@ func (b *Balance) Put(t *tx.Transaction) error {
 	return nil
 }
 
-// AvgCredit average debit transaction amount
+func (b *Balance) String() string {
+	return fmt.Sprintf("%.2f", *b)
+}
+
+// AvgCredit average credit transaction amount
 type AvgCredit struct {
 	average
 }
@@ -45,7 +51,11 @@ func (ad *AvgCredit) Put(t *tx.Transaction) error {
 	return nil
 }
 
-// AvgDebit average credit transaction amount
+func (ad AvgCredit) String() string {
+	return fmt.Sprintf("%.2f", ad.Value)
+}
+
+// AvgDebit average debit transaction amount
 type AvgDebit struct {
 	average
 }
@@ -58,6 +68,10 @@ func (ac *AvgDebit) Put(t *tx.Transaction) error {
 		ac.average.Add(t.Amount)
 	}
 	return nil
+}
+
+func (ac AvgDebit) String() string {
+	return fmt.Sprintf("%.2f", math.Abs(ac.Value))
 }
 
 // MonthlySummary number of transactions by month

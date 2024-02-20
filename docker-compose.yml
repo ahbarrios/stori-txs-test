@@ -1,0 +1,9 @@
+version: '3'
+services:
+  test:
+    build: .
+    volumes:
+    - ${MY_WORKSPACE}:/ws
+    working_dir: /ws${WORKSPACE_PATH:-/}
+    user: ${MY_USER:-root}
+    command: echo "your tests runner here"

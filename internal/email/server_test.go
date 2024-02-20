@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	s.MaxRecipients = 50
 
 	// enable TLS support for secure clients with self-signed certificate
-	cert, err := tls.LoadX509KeyPair("testdata/server.crt", "testdata/server.key")
+	cert, err := tls.LoadX509KeyPair("testdata/server.pem", "testdata/server.key")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -27,9 +27,6 @@ func TestClient_SendMail(t *testing.T) {
 	a := sasl.NewPlainClient("", "username", "password")
 	c := NewClient(testServerAddr, a)
 
-	cert, _ := x509.ParseCertificate(testServer.TLSConfig.Certificates[0].Certificate[0])
-	t.Logf("%v", cert)
-
 	m := strings.NewReader("To: to@example.com\r\n" +
 		"Subject: testing Client.SendMail!\r\n" +
 		"\r\n" +

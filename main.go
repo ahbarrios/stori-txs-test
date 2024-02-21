@@ -1,12 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
 	"io"
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/ahbarrios/stori-txn-test/internal/email"
 	"github.com/ahbarrios/stori-txn-test/internal/email/template"
@@ -21,12 +19,15 @@ var localSMTP *smtp.Server
 
 func main() {
 	// Start the SMTP server
-	go func() {
-		if err := localSMTP.ListenAndServe(); err != nil {
-			log.Fatal(err)
-		}
-	}()
-	defer localSMTP.Close()
+	if configmgr.IsLocal() {
+		log.Println("Starting local SMTP server")
+		go func() {
+			if err := localSMTP.ListenAndServe(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+		defer localSMTP.Close()
+	}
 
 	// Open the file source & handle the error and close the file at the end
 	fd, err := os.Open(configmgr.GetSourcePath())
@@ -76,25 +77,7 @@ func main() {
 	}
 
 	// work on the SMTP server to send the email
-	if err := email.NewClient(serverAddr, nil).SendMail("stori@storicard.com", []string{rcp}, bodyEmail); err != nil {
+	if err := email.NewClient(configmgr.GetSMTPServer(), nil).SendMail("stori@storicard.com", []string{rcp}, bodyEmail); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func init() {
-	s := smtp.NewServer(&email.Backend{})
-	s.Addr = serverAddr
-	s.Domain = "localhost"
-	s.WriteTimeout = 10 * time.Second
-	s.ReadTimeout = 10 * time.Second
-	s.MaxMessageBytes = 1024 * 1024
-	s.MaxRecipients = 50
-
-	// enable TLS support for secure clients with self-signed certificate
-	cert, err := tls.LoadX509KeyPair("internal/email/testdata/server.pem", "internal/email/testdata/server.key")
-	if err != nil {
-		log.Fatal(err)
-	}
-	s.TLSConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
-	localSMTP = s
 }

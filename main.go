@@ -17,12 +17,6 @@ import (
 	"github.com/emersion/go-smtp"
 )
 
-const (
-	serverAddr = "localhost:1025"
-	recipient  = "adrian2monk@gmail.com"
-	sourceFile = "examples/txns.csv"
-)
-
 var localSMTP *smtp.Server
 
 func main() {
@@ -35,7 +29,7 @@ func main() {
 	defer localSMTP.Close()
 
 	// Open the file source & handle the error and close the file at the end
-	fd, err := os.Open(sourceFile)
+	fd, err := os.Open(configmgr.GetSourcePath())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,6 +53,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	rcp := configmgr.GetRecipient()
 	// Write a func that receives an INPUT and return an HTML email template as result
 	bodyEmail := func() (io.Reader, error) {
 		r, err := template.NewSummaryBody(balance, avgCredit, avgDebit, txnByMonth)
@@ -73,7 +68,7 @@ func main() {
 		}
 
 		// Compound the email body with RFC 822 compatible format
-		m := strings.NewReader("To: " + recipient + "\r\n" +
+		m := strings.NewReader("To: " + rcp + "\r\n" +
 			"Subject: Transaction Summary Email\r\n" +
 			"\r\n" +
 			string(br) + "\r\n")
@@ -81,7 +76,7 @@ func main() {
 	}
 
 	// work on the SMTP server to send the email
-	if err := email.NewClient(serverAddr, nil).SendMail("stori@storicard.com", []string{recipient}, bodyEmail); err != nil {
+	if err := email.NewClient(serverAddr, nil).SendMail("stori@storicard.com", []string{rcp}, bodyEmail); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -51,10 +51,3 @@ func (c *config) GetAuth() sasl.Client {
 func (c *config) IsLocal() bool {
 	return c.GetSMTPServer() == localSMTPAddr
 }
-
-func init() {
-	os.Setenv("STORI_SMTP_SERVER", "localhost:1025")
-	os.Setenv("STORI_SENDER", "stori@storicard.com")
-	os.Setenv("STORI_RECIPIENT", "adrian2monk@gmail.com")
-	os.Setenv("STORI_SOURCE_PATH", "examples/txns.csv")
-}

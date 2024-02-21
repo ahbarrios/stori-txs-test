@@ -1,0 +1,13 @@
+.git
+README.md
+
+Dockerfile
+docker-compose.yml
+
+# examples
+internal/email/testdata
+!internal/email/testdata/server.pem
+!internal/email/testdata/server.key
+internal/email/template/*.html
+install_cert.sh
+

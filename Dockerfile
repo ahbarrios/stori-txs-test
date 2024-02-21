@@ -1,23 +1,22 @@
-# Build image
-FROM golang:1.21-alpine as builder
+# syntax=docker/dockerfile:1
 
-RUN apk update && apk add openssh git make && rm -rf /var/cache/apk/*
+FROM golang:1.21-alpine
 
 WORKDIR /app
 
+# Download Go modules
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
-RUN go build -o /app/build/main main.go
+# Copy the source code. Note the slash at the end, as explained in
+# https://docs.docker.com/engine/reference/builder/#copy
+COPY . ./ 
 
-# Deploy image
-FROM alpine:latest
+# Trust local certificates
+COPY internal/email/testdata/server.pem /usr/local/share/ca-certificates/server.pem
+RUN cat /usr/local/share/ca-certificates/server.pem >> /etc/ssl/certs/ca-certificates.crt
 
-RUN apk update && apk add ca-certificates tzdata && apk add dnsmasq && rm -rf /var/cache/apk/*
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /stori-summary-email
 
-WORKDIR /app
-
-COPY --from=builder /app/build/main .
-
-CMD ["./main"]
+CMD [ "/stori-summary-email" ]

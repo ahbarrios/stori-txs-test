@@ -1,14 +1,12 @@
 package main
 
 import (
-	"crypto/tls"
-	"log"
 	"os"
-	"time"
 
-	"github.com/ahbarrios/stori-txn-test/internal/email"
-	"github.com/emersion/go-smtp"
+	"github.com/emersion/go-sasl"
 )
+
+const localSMTPAddr = "localhost:1025"
 
 // configmgr will be a global variable that will be used to get the configuration from the environment
 var configmgr config
@@ -27,6 +25,10 @@ func (c *config) GetSMTPServer() string {
 	return os.Getenv("STORI_SMTP_SERVER")
 }
 
+func (c *config) GetSender() string {
+	return os.Getenv("STORI_SENDER")
+}
+
 func (c *config) GetRecipient() string {
 	return os.Getenv("STORI_RECIPIENT")
 }
@@ -35,31 +37,24 @@ func (c *config) GetSourcePath() string {
 	return os.Getenv("STORI_SOURCE_PATH")
 }
 
+func (c *config) GetAuth() sasl.Client {
+	if c.IsLocal() {
+		return sasl.NewPlainClient("", "username", "password")
+	}
+
+	usr := os.Getenv("STORI_SMTP_USERNAME")
+	pwd := os.Getenv("STORI_SMTP_PASSWORD")
+	return sasl.NewPlainClient("", usr, pwd)
+}
+
 // IsLocal will return true if the current environment is local to spin up the mock SMTP server
 func (c *config) IsLocal() bool {
-	return c.GetSMTPServer() == "localhost:1025"
+	return c.GetSMTPServer() == localSMTPAddr
 }
 
 func init() {
 	os.Setenv("STORI_SMTP_SERVER", "localhost:1025")
+	os.Setenv("STORI_SENDER", "stori@storicard.com")
 	os.Setenv("STORI_RECIPIENT", "adrian2monk@gmail.com")
 	os.Setenv("STORI_SOURCE_PATH", "examples/txns.csv")
-
-	if configmgr.IsLocal() {
-		s := smtp.NewServer(&email.Backend{})
-		s.Addr = configmgr.GetSMTPServer()
-		s.Domain = "localhost"
-		s.WriteTimeout = 10 * time.Second
-		s.ReadTimeout = 10 * time.Second
-		s.MaxMessageBytes = 1024 * 1024
-		s.MaxRecipients = 50
-
-		// enable TLS support for secure clients with self-signed certificate
-		cert, err := tls.LoadX509KeyPair("internal/email/testdata/server.pem", "internal/email/testdata/server.key")
-		if err != nil {
-			log.Fatal(err)
-		}
-		s.TLSConfig = &tls.Config{Certificates: []tls.Certificate{cert}}
-		localSMTP = s
-	}
 }

@@ -11,24 +11,9 @@ import (
 	"github.com/ahbarrios/stori-txn-test/internal/source/csv"
 	"github.com/ahbarrios/stori-txn-test/internal/tx"
 	"github.com/ahbarrios/stori-txn-test/internal/tx/agg"
-
-	"github.com/emersion/go-smtp"
 )
 
-var localSMTP *smtp.Server
-
 func main() {
-	// Start the SMTP server
-	if configmgr.IsLocal() {
-		log.Println("Starting local SMTP server")
-		go func() {
-			if err := localSMTP.ListenAndServe(); err != nil {
-				log.Fatal(err)
-			}
-		}()
-		defer localSMTP.Close()
-	}
-
 	// Open the file source & handle the error and close the file at the end
 	fd, err := os.Open(configmgr.GetSourcePath())
 	if err != nil {
@@ -70,6 +55,7 @@ func main() {
 
 		// Compound the email body with RFC 822 compatible format
 		m := strings.NewReader("To: " + rcp + "\r\n" +
+			"Content-type: text/html\r\n" +
 			"Subject: Transaction Summary Email\r\n" +
 			"\r\n" +
 			string(br) + "\r\n")
@@ -77,7 +63,8 @@ func main() {
 	}
 
 	// work on the SMTP server to send the email
-	if err := email.NewClient(configmgr.GetSMTPServer(), nil).SendMail("stori@storicard.com", []string{rcp}, bodyEmail); err != nil {
+	if err := email.NewClient(configmgr.GetSMTPServer(), configmgr.GetAuth()).
+		SendMail(configmgr.GetSender(), []string{rcp}, bodyEmail); err != nil {
 		log.Fatal(err)
 	}
 }

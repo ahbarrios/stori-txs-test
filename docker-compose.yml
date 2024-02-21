@@ -2,3 +2,10 @@ version: '3'
 services:
   test:
     build: .
+    environment:
+      - STORI_SMTP_SERVER=${STORI_SMTP_SERVER:?error}
+      - STORI_SMTP_USERNAME=${STORI_SMTP_USERNAME} # this should be secrets
+      - STORI_SMTP_PASSWORD=${STORI_SMTP_PASSWORD} # this should be secrets
+      - STORI_SENDER=${STORI_SENDER:-stori@storicard.com}
+      - STORI_RECIPIENT=${STORI_RECIPIENT:?error}
+      - STORI_SOURCE_PATH=${STORI_SOURCE_PATH:-examples/txns.csv} # use a mounted volume for this
